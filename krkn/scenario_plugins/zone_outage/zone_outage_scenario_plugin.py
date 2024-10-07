@@ -6,9 +6,7 @@ from krkn_lib.models.telemetry import ScenarioTelemetry
 from krkn_lib.telemetry.ocp import KrknTelemetryOpenshift
 from krkn_lib.utils import log_exception
 
-from krkn import utils
 from krkn.scenario_plugins.abstract_scenario_plugin import AbstractScenarioPlugin
-from krkn.scenario_plugins.native.network import cerberus
 from krkn.scenario_plugins.node_actions.aws_node_scenarios import AWS
 
 
@@ -17,7 +15,6 @@ class ZoneOutageScenarioPlugin(AbstractScenarioPlugin):
         self,
         run_uuid: str,
         scenario: str,
-        krkn_config: dict[str, any],
         lib_telemetry: KrknTelemetryOpenshift,
         scenario_telemetry: ScenarioTelemetry,
     ) -> int:
@@ -40,8 +37,6 @@ class ZoneOutageScenarioPlugin(AbstractScenarioPlugin):
                         "zone outage scenarios" % cloud_type
                     )
                     return 1
-
-                start_time = int(time.time())
 
                 for subnet_id in subnet_ids:
                     logging.info("Targeting subnet_id")
@@ -88,8 +83,6 @@ class ZoneOutageScenarioPlugin(AbstractScenarioPlugin):
                 for acl_id in acl_ids_created:
                     cloud_object.delete_network_acl(acl_id)
 
-                end_time = int(time.time())
-                cerberus.publish_kraken_status(krkn_config, [], start_time, end_time)
         except (RuntimeError, Exception):
             logging.error(
                 f"ZoneOutageScenarioPlugin scenario {scenario} failed with exception: {e}"

@@ -13,7 +13,6 @@ class NativeScenarioPlugin(AbstractScenarioPlugin):
         self,
         run_uuid: str,
         scenario: str,
-        krkn_config: dict[str, any],
         lib_telemetry: KrknTelemetryOpenshift,
         scenario_telemetry: ScenarioTelemetry,
     ) -> int:
@@ -29,7 +28,6 @@ class NativeScenarioPlugin(AbstractScenarioPlugin):
             PLUGINS.run(
                 scenario,
                 lib_telemetry.get_lib_kubernetes().get_kubeconfig_path(),
-                krkn_config,
                 run_uuid,
             )
             result = pool.join()
@@ -48,7 +46,7 @@ class NativeScenarioPlugin(AbstractScenarioPlugin):
     def get_scenario_types(self) -> list[str]:
         return [
             "pod_disruption_scenarios",
-            "pod_network_scenario",
+            "pod_network_scenarios",
             "vmware_node_scenarios",
             "ibmcloud_node_scenarios",
         ]

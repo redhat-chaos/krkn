@@ -18,13 +18,10 @@ class ContainerScenarioPlugin(AbstractScenarioPlugin):
         self,
         run_uuid: str,
         scenario: str,
-        krkn_config: dict[str, any],
         lib_telemetry: KrknTelemetryOpenshift,
         scenario_telemetry: ScenarioTelemetry,
     ) -> int:
-        start_time = int(time.time())
         pool = PodsMonitorPool(lib_telemetry.get_lib_kubernetes())
-        wait_duration = krkn_config["tunings"]["wait_duration"]
         try:
             with open(scenario, "r") as f:
                 cont_scenario_config = yaml.full_load(f)
@@ -44,14 +41,7 @@ class ContainerScenarioPlugin(AbstractScenarioPlugin):
                     )
                     return 1
                 scenario_telemetry.affected_pods = result
-                logging.info("Waiting for the specified duration: %s" % (wait_duration))
-                time.sleep(wait_duration)
 
-                # capture end time
-                end_time = int(time.time())
-
-                # publish cerberus status
-                cerberus.publish_kraken_status(krkn_config, [], start_time, end_time)
         except (RuntimeError, Exception):
             logging.error("ContainerScenarioPlugin exiting due to Exception %s" % e)
             return 1
