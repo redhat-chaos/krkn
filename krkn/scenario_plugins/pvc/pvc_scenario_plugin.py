@@ -7,9 +7,8 @@ import yaml
 from krkn_lib.k8s import KrknKubernetes
 from krkn_lib.models.telemetry import ScenarioTelemetry
 from krkn_lib.telemetry.ocp import KrknTelemetryOpenshift
-from krkn_lib.utils import get_yaml_item_value, log_exception
+from krkn_lib.utils import get_yaml_item_value
 
-from krkn import cerberus, utils
 from krkn.scenario_plugins.abstract_scenario_plugin import AbstractScenarioPlugin
 
 
@@ -18,7 +17,6 @@ class PvcScenarioPlugin(AbstractScenarioPlugin):
         self,
         run_uuid: str,
         scenario: str,
-        krkn_config: dict[str, any],
         lib_telemetry: KrknTelemetryOpenshift,
         scenario_telemetry: ScenarioTelemetry,
     ) -> int:
@@ -173,7 +171,6 @@ class PvcScenarioPlugin(AbstractScenarioPlugin):
                     )
                 )
 
-                start_time = int(time.time())
                 # Create temp file in the PVC
                 full_path = "%s/%s" % (str(mount_path), str(file_name))
 
@@ -260,7 +257,6 @@ class PvcScenarioPlugin(AbstractScenarioPlugin):
                 )
             )
 
-            start_time = int(time.time())
             # Create temp file in the PVC
             full_path = "%s/%s" % (str(mount_path), str(file_name))
             command = "fallocate -l $((%s*1024)) %s" % (
@@ -296,8 +292,6 @@ class PvcScenarioPlugin(AbstractScenarioPlugin):
                     file_size_kb,
                     lib_telemetry.get_lib_kubernetes(),
                 )
-                end_time = int(time.time())
-                cerberus.publish_kraken_status(krkn_config, [], start_time, end_time)
         except (RuntimeError, Exception) as e:
             logging.error("PvcScenarioPlugin exiting due to Exception %s" % e)
             return 1
