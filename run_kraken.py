@@ -468,6 +468,7 @@ def main(cfg) -> int:
                     end_time,
                     alert_profile,
                     elastic_alerts_index,
+                    logging
                 )
 
             else:
@@ -483,6 +484,7 @@ def main(cfg) -> int:
                 end_time,
                 metrics_profile,
                 elastic_metrics_index,
+                logging
             )
 
         if post_critical_alerts > 0:
