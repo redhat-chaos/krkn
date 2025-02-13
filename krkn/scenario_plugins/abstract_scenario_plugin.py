@@ -69,7 +69,6 @@ class AbstractScenarioPlugin(ABC):
             scenario_telemetry = ScenarioTelemetry()
             scenario_telemetry.scenario = scenario_config
             scenario_telemetry.scenario_type = self.get_scenario_types()[0]
-            logging.info('type type' + str(type(scenario_telemetry.scenario_type)))
             scenario_telemetry.start_timestamp = time.time()
             parsed_scenario_config = telemetry.set_parameters_base64(
                 scenario_telemetry, scenario_config
@@ -114,7 +113,6 @@ class AbstractScenarioPlugin(ABC):
 
             if scenario_telemetry.exit_status != 0:
                 failed_scenarios.append(scenario_config)
-            logging.info("scenario telem " + str(scenario_telemetry))
             scenario_telemetries.append(scenario_telemetry)
             logging.info(f"wating {wait_duration} before running the next scenario")
             time.sleep(wait_duration)
