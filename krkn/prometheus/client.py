@@ -29,13 +29,13 @@ def alerts(
 ):
 
     if alert_profile is None or os.path.exists(alert_profile) is False:
-        logging.info(f"{alert_profile} alert profile does not exist")
+        logging.error(f"{alert_profile} alert profile does not exist")
         sys.exit(1)
 
     with open(alert_profile) as profile:
         profile_yaml = yaml.safe_load(profile)
         if not isinstance(profile_yaml, list):
-            logging.info(
+            logging.error(
                 f"{alert_profile} wrong file format, alert profile must be "
                 f"a valid yaml file containing a list of items with at least 3 properties: "
                 f"expr, description, severity"
@@ -44,7 +44,8 @@ def alerts(
 
         for alert in profile_yaml:
             if list(alert.keys()).sort() != ["expr", "description", "severity"].sort():
-                logging.info(f"wrong alert {alert}, skipping")
+                logging.error(f"wrong alert {alert}, skipping")
+                continue
 
             processed_alert = prom_cli.process_alert(
                 alert,
@@ -64,7 +65,7 @@ def alerts(
                 )
                 result = elastic.push_alert(elastic_alert, elastic_alerts_index)
                 if result == -1:
-                    logging.info("failed to save alert on ElasticSearch")
+                    logging.error("failed to save alert on ElasticSearch")
                 pass
 
 
@@ -158,12 +159,12 @@ def metrics(
 ) -> list[dict[str, list[(int, float)] | str]]:
     metrics_list: list[dict[str, list[(int, float)] | str]] = []
     if metrics_profile is None or os.path.exists(metrics_profile) is False:
-        logging.info(f"{metrics_profile} alert profile does not exist")
+        logging.error(f"{metrics_profile} alert profile does not exist")
         sys.exit(1)
     with open(metrics_profile) as profile:
         profile_yaml = yaml.safe_load(profile)
         if not profile_yaml["metrics"] or not isinstance(profile_yaml["metrics"], list):
-            logging.info(
+            logging.error(
                 f"{metrics_profile} wrong file format, alert profile must be "
                 f"a valid yaml file containing a list of items with 3 properties: "
                 f"expr, description, severity"
@@ -222,6 +223,6 @@ def metrics(
                 run_uuid=run_uuid, index=elastic_metrics_index, raw_data=metrics_list
             )
             if result == -1:
-                logging.info("failed to save metrics on ElasticSearch")
+                logging.error("failed to save metrics on ElasticSearch")
 
     return metrics_list

@@ -193,7 +193,6 @@ def main(cfg) -> int:
             if not prometheus_url:
                 try:
                     connection_data = ocpcli.get_prometheus_api_connection_data()
-                    logging.info('connection data' + str(connection_data.endpoint))
                     if connection_data:
                         prometheus_url = connection_data.endpoint
                         prometheus_bearer_token = connection_data.token
