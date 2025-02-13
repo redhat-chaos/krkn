@@ -42,7 +42,6 @@ class vSphere:
                 "'VSPHERE_IP', 'VSPHERE_USERNAME', "
                 "'VSPHERE_PASSWORD' are not set"
             )
-
         self.client = create_vsphere_client(
             server=self.server,
             username=self.username,
