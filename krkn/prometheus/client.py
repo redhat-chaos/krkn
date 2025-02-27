@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import os.path
+import math
 from typing import Optional, List, Dict, Any
 
 import logging
@@ -163,6 +164,7 @@ def metrics(
         sys.exit(1)
     with open(metrics_profile) as profile:
         profile_yaml = yaml.safe_load(profile)
+
         if not profile_yaml["metrics"] or not isinstance(profile_yaml["metrics"], list):
             logging.error(
                 f"{metrics_profile} wrong file format, alert profile must be "
@@ -170,13 +172,14 @@ def metrics(
                 f"expr, description, severity"
             )
             sys.exit(1)
-
+        elapsed_ceil = math.ceil((end_time - start_time)/ 60 )
+        elapsed_time = str(elapsed_ceil) + "m"
         for metric_query in profile_yaml["metrics"]:
             query = metric_query['query']
+            
             # calculate elapsed time
             if ".elapsed" in metric_query["query"]:
-                query = metric_query['query'].replace(".elapsed", str(end_time - start_time))
-
+                query = metric_query['query'].replace(".elapsed", elapsed_time)
             if "instant" in list(metric_query.keys()) and metric_query['instant']:
                 metrics_result = prom_cli.process_query(
                    query
@@ -218,6 +221,7 @@ def metrics(
                         metrics_list.append(metric)
                     except ValueError:
                         pass
+        logging.info('metric list'+  str(len(metrics_list)) )
         if elastic:
             result = elastic.upload_metrics_to_elasticsearch(
                 run_uuid=run_uuid, index=elastic_metrics_index, raw_data=metrics_list
