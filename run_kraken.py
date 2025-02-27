@@ -466,8 +466,7 @@ def main(cfg) -> int:
                     start_time,
                     end_time,
                     alert_profile,
-                    elastic_alerts_index,
-                    logging
+                    elastic_alerts_index
                 )
 
             else:
